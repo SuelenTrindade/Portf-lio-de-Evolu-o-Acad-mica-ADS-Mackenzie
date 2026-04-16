@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duelo de Heróis - Mackenzie</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Arena de Duelo</h1>
+        <p>Comparação de Poderes via API</p>
+    </header>
+
+    <div id="loading">Convocando heróis para a arena...</div>
+
+    <main id="arena" class="battle-arena" style="display: none;">
+        <div id="hero1" class="hero-card"></div>
+        <div class="vs-badge">VS</div>
+        <div id="hero2" class="hero-card"></div>
+    </main>
+
+    <div id="result-container">
+        <h2 id="result-text"></h2>
+        <button onclick="window.location.reload()" class="btn-retry">Nova Batalha</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

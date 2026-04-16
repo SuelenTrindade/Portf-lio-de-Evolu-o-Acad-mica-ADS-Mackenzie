@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Focus - Pomodoro</title>
+    <style>
+        /* --- CSS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        :root { 
+            --primary: #6ee7b7;   /* Verde - Foco */
+            --secondary: #fcd34d; /* Amarelo - Pausa */
+            --danger: #fca5a5;    /* Vermelho - Reset/Alerta */
+            --text: #1f2937;
+        }
+
+        body { 
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .container { 
+            background: white; 
+            width: 100%; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 30px;
+            transition: all 0.5s ease;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { 
+            background: #f3f4f6; 
+            color: #10b981; 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold; 
+            transition: 0.3s;
+        }
+
+        .timer-section { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        
+        /* Círculo que muda de cor */
+        .circle-progress { 
+            width: 260px; 
+            height: 260px; 
+            border-radius: 50%; 
+            border: 12px solid var(--primary); 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+            box-shadow: 0 0 15px rgba(110, 231, 183, 0.2);
+        }
+
+        .time-display h2 { font-size: 4rem; color: var(--text); }
+        .time-display p { font-size: 11px; color: #9ca3af; letter-spacing: 2px; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { 
+            border: none; 
+            padding: 18px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.95); }
+
+        .btn-start { grid-column: span 2; background: var(--primary); }
+        .btn-pause { background: var(--secondary); }
+        .btn-reset { background: var(--danger); }
+
+        /* Estilo Desktop */
+        @media (min-width: 769px) {
+            .container { 
+                width: 420px; 
+                height: auto; 
+                min-height: 600px;
+                border-radius: 30px; 
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); 
+            }
+        }
+
+        /* Classe para quando o tempo acaba */
+        .timer-finished {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 25px rgba(252, 165, 165, 0.5) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <header class="header">
+            <h3 style="letter-spacing: 1px;">CYBER FOCUS</h3>
+            <span class="status-badge" id="status">FOCO</span>
+        </header>
+
+        <section class="timer-section">
+            <div class="circle-progress" id="circle">
+                <div class="time-display" style="text-align: center;">
+                    <h2 id="timer">25:00</h2>
+                    <p id="label">MINUTOS RESTANTES</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="controls">
+            <button class="btn btn-start" onclick="startTimer()">INICIAR</button>
+            <button class="btn btn-pause" onclick="pauseTimer()">PAUSAR</button>
+            <button class="btn btn-reset" onclick="resetTimer()">REINICIAR</button>
+        </footer>
+    </main>
+
+    <script>
+        let timeLeft = 25 * 60; // 25 min em segundos
+        let timerId = null;
+
+        const timerDisplay = document.getElementById('timer');
+        const circle = document.getElementById('circle');
+        const statusBadge = document.getElementById('status');
+        const labelText = document.getElementById('label');
+
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerId !== null) return;
+            
+            statusBadge.innerText = "PRODUZINDO";
+            statusBadge.style.color = "#10b981";
+            circle.classList.remove('timer-finished');
+
+            timerId = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                } else {
+                    // QUANDO O TEMPO ACABA:
+                    clearInterval(timerId);
+                    timerId = null;
+                    circle.classList.add('timer-finished'); // Muda a cor para vermelho
+                    statusBadge.innerText = "CONCLUÍDO";
+                    statusBadge.style.color = "#ef4444";
+                    labelText.innerText = "HORA DE DESCANSAR!";
+                    alert("Pomodoro finalizado! Descanse um pouco.");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerId);
+            timerId = null;
+            statusBadge.innerText = "PAUSADO";
+            statusBadge.style.color = "#f59e0b";
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = 25 * 60;
+            updateDisplay();
+            circle.classList.remove('timer-finished');
+            statusBadge.innerText = "FOCO";
+            statusBadge.style.color = "#10b981";
+            labelText.innerText = "MINUTOS RESTANTES";
+        }
+    </script>
+</body>
+</html>
